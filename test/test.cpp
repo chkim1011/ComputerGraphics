@@ -1,5 +1,6 @@
 #include <iostream>
 #include <GL/gl.h>
+#include <GL/glu.h>
 #include <GL/glut.h>
 
 void display(void)
@@ -12,8 +13,8 @@ void display(void)
     glBegin(GL_POLYGON);
         glVertex3f (0.25,0.25,0.0);
         glVertex3f (0.75,0.25,0.0);
-        glVertex3f (0.25,0.75,0.0);
         glVertex3f (0.75,0.75,0.0);
+        glVertex3f (0.25,0.75,0.0);
     glEnd();
 
     glFlush(); //start processing buffered OpenGL routines
