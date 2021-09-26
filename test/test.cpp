@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cmath>
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glut.h>
@@ -10,7 +11,8 @@ void init (void)
     glShadeModel(GL_FLAT);
 }
 
-static int year = 0, day = 0;
+static int year = 0;
+static double a = 0;
 
 
 void display(void)
@@ -27,7 +29,7 @@ void display(void)
         
         glColor3f (0.0,0.0,0.7);
         glRotatef((GLfloat) year,0.0,1.0,0.0);
-        glTranslatef(2.0,0.0,0.0);
+        glTranslatef(2.0,(GLfloat) cos(a),(GLfloat) cos(a));
         //glScalef(1.0,2.0,1.0);
         glutWireSphere(0.5, 50, 50);
 
@@ -43,10 +45,14 @@ void keyboard(unsigned char key, int x, int y)
 {
     case 'd':
         year = (year + 10) % 360;
+        a = a + 1;
+        std::cout << year << std::endl;
+
         glutPostRedisplay();
         break;
     case 'f':
-        year = (year - 10) % 360;
+        a = a + 1;
+        std::cout << a << std::endl;
         glutPostRedisplay();
         break;        
 }
@@ -62,7 +68,7 @@ void reshape(int w, int h)
     gluPerspective(45.0,1.0,1.5,20.0);
     glMatrixMode(GL_MODELVIEW);
     //glLoadIdentity();
-    gluLookAt(5.0,5.0,5.0,0.0,0.0,0.0,0.0,1.0,0.0);
+    gluLookAt(0.0,0.0,10.0,0.0,0.0,0.0,0.0,1.0,0.0);
 
 
 }
