@@ -46,27 +46,36 @@ void display(void)
    glTranslatef(1.0,-0.2,0.0);
    glPushMatrix();
       glScalef(2.0,0.4,1.0);
-      glutWireCube(1.0);
+      glutSolidCube(1.0);
    glPopMatrix();
 
 
    //glPushMatrix();
    
-      glPushMatrix();
-         glTranslatef(1.0, 0.2,0.05);
-         glRotatef((GLfloat) thumb, 0.0,0.0,1.0);
-         glTranslatef(0.15,-0.1,0.0);
-         drawfinger();
-      glPopMatrix();
+   glPushMatrix();
+      glTranslatef(1.0, 0.2,-0.35);
+      glRotatef((GLfloat) thumb, 0.0,0.0,1.0);
+      glTranslatef(0.15,-0.1,0.0);
+      drawfinger();
+   glPopMatrix();
   
    
    
-      glPushMatrix();
-         glTranslatef(1.0, 0.2,0.35);
-         glRotatef((GLfloat) thumb, 0.0,0.0,1.0);
-         glTranslatef(0.15,-0.1,0.0);
-         drawfinger();
-      glPopMatrix();
+   glPushMatrix();
+      glTranslatef(1.0, 0.2,0.0);
+      glRotatef((GLfloat) thumb, 0.0,0.0,1.0);
+       glTranslatef(0.15,-0.1,0.0);
+      drawfinger();
+   glPopMatrix();
+  
+   
+   
+   glPushMatrix();
+      glTranslatef(1.0, 0.2,0.35);
+      glRotatef((GLfloat) thumb, 0.0,0.0,1.0);
+      glTranslatef(0.15,-0.1,0.0);
+      drawfinger();
+   glPopMatrix();
    //glPopMatrix();
    
   
