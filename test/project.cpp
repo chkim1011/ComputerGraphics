@@ -19,8 +19,11 @@ void init (void)
 void drawupper_body();
 void drawlower_body();
 void drawhead();
-void drawleg();
-void drawarm();
+void drawright_leg();
+void drawleft_leg();
+void drawright_arm();
+void drawleft_arm();
+
 
 //animation
 
@@ -42,69 +45,51 @@ void display(void)
 
     
     
+    glPushMatrix(); //total body 
     
-    
-    
-    glPushMatrix();
+    glPushMatrix(); //upper_body
     drawupper_body();
     
-    //head
-    glPushMatrix();
+    glPushMatrix(); //head
     glTranslatef(0.0,15.0,0.0);
     drawhead();
-    glPopMatrix();
+    glPopMatrix(); //head done
     
-    //right_arm
-    glPushMatrix();
-    glColor3f(0.9,0.9,0.9);
-    glTranslatef(-4.0,8.2,0.0);
-    //glRoatef(shoulder_joint);
-    glTranslatef(0.0,-6.0,0.0);
-    //glRotatef(arm_joint);
-    glTranslatef(0.0,6.0,0.0);   
-    drawarm();
-    glPopMatrix();
     
-    //left_arm
-    glPushMatrix();
+    glPushMatrix(); //right_arm
     glColor3f(0.9,0.9,0.9);
-    glTranslatef(4.0,8.2,0.0);
-    //glRoatef(shoulder_joint);
-    glTranslatef(0.0,-6.0,0.0);
-    //glRotatef(arm_joint);
-    glTranslatef(0.0,6.0,0.0);   
-    drawarm();
-    glPopMatrix();
-    glPopMatrix();
+    glTranslatef(-4.0,8.2,0.0);  
+    drawright_arm();
+    glPopMatrix(); //right_arm done
+    
+    
+    glPushMatrix(); //left_arm
+    glColor3f(0.9,0.9,0.9);
+    glTranslatef(4.0,8.2,0.0);   
+    drawleft_arm();
+    glPopMatrix(); //left_arm done
 
+    glPopMatrix(); //upper_body done
     
     
-    
-    
-    glPushMatrix();
-    //glRotatef(wrist_joint);
+    glPushMatrix(); //lower_body
     drawlower_body();
-    //right_leg
-    glPushMatrix();
+
+    glPushMatrix(); //right_leg
     glColor3f(0.9,0.9,0.9);
-    glTranslatef(-2.0,-5.0,0.0);
-    //glRoatef(hip_joint);
-    glTranslatef(0.0,-10.0,0.0);
-    //glRotatef(knee_joint);
-    glTranslatef(0.0,10.0,0.0);   
-    drawleg();
-    glPopMatrix();
-    //left_leg
-    glPushMatrix();
+    glTranslatef(-2.0,-5.0,0.0);   
+    drawright_leg();
+    glPopMatrix(); //right_leg done
+    
+    glPushMatrix(); //left_leg
     glColor3f(0.9,0.9,0.9);
     glTranslatef(2.0,-5.0,0.0);
-    //glRoatef(hip_joint);
-    glTranslatef(0.0,-10.0,0.0);
-    //glRotatef(knee_joint);
-    glTranslatef(0.0,10.0,0.0);
-    drawleg();
-    glPopMatrix();
-    glPopMatrix();
+    drawleft_leg();
+    glPopMatrix(); //left_leg done
+
+    glPopMatrix(); //lower_body done
+
+    glPopMatrix(); //total body done
 
 
     glutSwapBuffers(); //start processing buffered OpenGL routines
@@ -131,7 +116,7 @@ void reshape(int w, int h)
     //gluPerspective(45,1.0,10.0,20.0);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    gluLookAt(0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0,0.0);
+    gluLookAt(-1.0,1.0,1.0,0.0,0.0,0.0,0.0,1.0,0.0);
 
 
 }
@@ -155,7 +140,7 @@ int main(int argc, char** argv)
     return 0;
 }
 
-void drawarm() 
+void drawright_arm() 
 {
     glPushMatrix();
     //upper_arm
@@ -176,7 +161,55 @@ void drawarm()
     glPopMatrix();
 }
 
-void drawleg()
+void drawleft_arm() 
+{
+    glPushMatrix();
+    //upper_arm
+    glPushMatrix();
+    gluSphere(obj,1.4,20,20);
+    glRotatef(90,1.0,0.0,0.0);
+    gluCylinder(obj,1.4,1.0,6.0,10,10);
+    glPopMatrix();
+
+    //lower_arm
+    glTranslatef(0.0,-6.0,0.0);
+    glPushMatrix();
+    glRotatef(-90,1.0,0.0,0.0);
+    gluSphere(obj, 1.0,20,20);
+    glRotatef(90,1.0,0.0,0.0);
+    gluCylinder(obj,1.0, 0.5, 5.5,10,10);
+    glPopMatrix();
+
+    glPopMatrix();
+}
+
+
+
+void drawright_leg()
+{
+    glPushMatrix();
+    //upper_leg
+    glPushMatrix();
+    gluSphere(obj,2.0,20,20);
+    glRotatef(90,1.0,0.0,0.0);
+    gluCylinder(obj,2.0,1.0,10.0,10,10);
+    glPopMatrix();
+
+    //lower_leg
+    glTranslatef(0.0,-10.0,0.0);
+    glPushMatrix();
+    gluSphere(obj, 1.0,20,20);
+    glRotatef(90,1.0,0.0,0.0);
+    gluCylinder(obj,1.0, 0.7, 8.0,10,10);
+    glPopMatrix();
+
+    //foot
+
+    glPopMatrix();
+
+}
+
+void drawleft_leg()
 {
     glPushMatrix();
     //upper_leg
@@ -204,8 +237,6 @@ void drawupper_body()
 {
     
     
-    glPushMatrix();
-    
     glScalef(1.0,1.0,0.7);
     
     //wrist
@@ -221,17 +252,17 @@ void drawupper_body()
     glTranslatef(0.0,0.0,1.5);
     gluCylinder(obj,1.5, 1.2,1.8,10,10);
 
-    glPopMatrix();
 
 }
 
 void drawlower_body()
 {  
-    glPushMatrix();
+    
+    //wrist_bot
     glScalef(1.0,1.0,0.7);
     glRotatef(90,1.0,0.0,0.0);
     gluCylinder(obj, 3.0,4.0,5.0,10,10);
-    glPopMatrix();
+    
 }
 
 void drawhead()
