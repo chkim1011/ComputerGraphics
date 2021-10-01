@@ -5,8 +5,8 @@
 #include <GL/glut.h>
 
 GLUquadricObj* obj;
-GLfloat dt = 1;
 GLfloat joint, joint2, arm_joint, knee_joint = 0;
+
 
 void init (void)
 {
@@ -41,6 +41,9 @@ void display(void)
         glVertex3f(50.0,0.0,0.0);
         glVertex3f(0.0,-50.0,0.0);
         glVertex3f(0.0,50.0,0.0);
+        glVertex3f(0.0,0.0,-50.0);
+        glVertex3f(0.0,0.0,50.0);
+
     glEnd();
 
     glColor3f(0.9,0.9,0.9);
@@ -51,7 +54,6 @@ void display(void)
     glTranslatef(0.0,23.0,0.0); //to the ground
 
     glPushMatrix(); //upper_body
-    //glRotatef(-45,0.0,1.0,0.0); //top_wrist rotate
     drawupper_body();
     
     glPushMatrix(); //head
@@ -108,7 +110,9 @@ void keyboard(unsigned char key, int x, int y)
 
 void timer(int value) 
 {  
-    dt += 0.2;
+    static GLfloat dt = 1;
+   
+    dt += 0.1;
     joint = 90*cos(dt)+90;
     joint2 = 45*cos(dt)+45;
     arm_joint = 30*cos(dt) +30;
@@ -129,7 +133,7 @@ void reshape(int w, int h)
     //gluPerspective(45,1.0,10.0,20.0);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    gluLookAt(1.0,1.0,1.0,0.0,0.0,0.0,0.0,1.0,0.0);
+    gluLookAt(1.0,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0);
 
 
 }
@@ -281,14 +285,18 @@ void drawhead()
 void drawupper_body()
 {
     
-    
+    glRotatef(knee_joint,1.0,0.0,0.0); //top_wrist rotate
     glPushMatrix();
     
     glScalef(1.0,1.0,0.7);
     
     //wrist
+    glPushMatrix();
+    glScalef(1.0,0.7,1.0);
+    gluSphere(obj,3.0,10,10);
+    glPopMatrix();
+
     glRotatef(-90.0,1.0,0.0,0.0);
-    //gluSphere(obj,3.0,10,10);
     gluCylinder(obj,3.0,4.0,6.0,10,10);
     //chest
     glTranslatef(0.0,0.0,6.0);
