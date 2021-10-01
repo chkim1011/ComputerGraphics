@@ -8,21 +8,25 @@
 static GLfloat top_wrist , bot_wrist, right_shoulder, 
                 left_shoulder, right_arm, left_arm, 
                 right_hip, left_hip, right_knee, 
-                left_knee, head = 0;
+                left_knee, head, wheel = 0;
 static GLfloat dt;
 static GLfloat x,y,z = 0;
 static GLUquadricObj* obj;
+static GLUquadricObj* obj1;
+
 
 
 
 
 void init (void)
 {
-    glClearColor (0.0,0.0,0.0,0.0); //background color
+    glClearColor (1.0,1.0,1.0,0.0); //background color
     glShadeModel(GL_FLAT);
 
     obj = gluNewQuadric();
+    obj1 = gluNewQuadric();
     gluQuadricDrawStyle(obj, GLU_FILL);
+    gluQuadricDrawStyle(obj1, GLU_LINE);
 
 }
 //modeling
@@ -44,16 +48,36 @@ void display(void)
 {
     glClear (GL_COLOR_BUFFER_BIT);
 
-    glBegin(GL_LINES);
-        glColor3f(1.0,0.0,0.0);
-        glVertex3f(-50.0,0.0,0.0);
-        glVertex3f(50.0,0.0,0.0);
-        glVertex3f(0.0,-50.0,0.0);
-        glVertex3f(0.0,50.0,0.0);
-        glVertex3f(0.0,0.0,-50.0);
-        glVertex3f(0.0,0.0,50.0);
+    glBegin(GL_QUAD_STRIP);
+        glColor3f(0.8235,0.8824,0.9176);
+        glVertex3f(-50.0,0.0,50.0);
+        glVertex3f(-50.0,50.0,50.0);
+        glVertex3f(-50.0,0.0,-50.0);
+        glVertex3f(-50.0,50.0,-50.0);
+        glVertex3f(50.0,0.0,-50.0);
+        glVertex3f(50.0,50.0,-50.0);
 
     glEnd();
+    
+    
+    glPushMatrix();
+    glColor3f(0.0,0.0,0.0);
+    glTranslatef(0.0,25.0,0.0);
+    glRotatef(wheel,1.0,0.0,0.0);
+    glRotatef(90.0,0.0,1.0,0.0);
+    glTranslatef(0.0,0.0,-5.0);
+    glPushMatrix();
+    glTranslatef(0.0,0.0,0.0);
+    gluDisk(obj,22,25,20,10);
+    glPopMatrix();
+    glPushMatrix();
+    glTranslatef(0.0,0.0,10.0);
+    gluDisk(obj,22,25,20,10);
+    glPopMatrix();
+    glColor3f(0.9,0.9,0.9);
+    gluCylinder(obj1,22,22,10,10,10);
+    gluCylinder(obj1,25,25,10,10,10);
+    glPopMatrix();
 
     glColor3f(0.9,0.9,0.9);
 
@@ -78,7 +102,7 @@ void keyboard(unsigned char key, int x, int y)
 void timer(int value) 
 {  
     
-    dt += 0.1;
+    dt += 0.6;
     run();
 
     //if (joint <=0 || joint >= 180) dt *=-1;
@@ -93,10 +117,10 @@ void reshape(int w, int h)
     glLoadIdentity();
     if (w >= h) glOrtho(-100.0*w/h,100.0*w/h,-100.0,100.0,-100.0,100.0);
     else glOrtho(-100.0,100.0,-100.0*h/w,100.0*h/w,-100.0,100.0);
-    //gluPerspective(45,1.0,10.0,20.0);
+    //gluPerspective(45,100.0,100.0,200.0);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    gluLookAt(0.0,1.0,-1.0,0.0,0.0,0.0,0.0,1.0,0.0);
+    gluLookAt(1.0,1.0,1.0,0.0,0.0,0.0,0.0,1.0,0.0);
 
 
 }
@@ -121,7 +145,9 @@ int main(int argc, char** argv)
 }
 
 void drawright_arm() 
-{
+{   
+    glColor3f(0.9765,0.7765,0.8118);
+
     glPushMatrix();
     
     //upper_arm
@@ -151,7 +177,9 @@ void drawright_arm()
 }
 
 void drawleft_arm() 
-{
+{   
+    glColor3f(0.9765,0.7765,0.8118);
+
     glPushMatrix();
 
     //upper_arm
@@ -181,7 +209,9 @@ void drawleft_arm()
 }
 
 void drawright_leg()
-{
+{   
+    glColor3f(0.7529,0.7529,0.7529);
+    
     glPushMatrix();
     //upper_leg
     glTranslatef(0.9,0.8,0.0);
@@ -213,6 +243,8 @@ void drawright_leg()
 
 void drawleft_leg()
 {
+    glColor3f(0.7529,0.7529,0.7529);
+
     glPushMatrix();
     //upper_leg
     glTranslatef(-0.9,0.8,0.0);
@@ -253,6 +285,7 @@ void drawhead()
 
 void drawupper_body()
 {
+    glColor3f(0.9765,0.7765,0.8118);
     
     glRotatef(top_wrist,0.0,1.0,0.0); //top_wrist rotate
     glPushMatrix();
@@ -282,6 +315,8 @@ void drawupper_body()
 
 void drawlower_body()
 {  
+    glColor3f(0.7529,0.7529,0.7529);
+
     glRotatef(bot_wrist,0.0,1.0,0.0); //bot_wrist rotate 
     glPushMatrix();
     glScalef(1.0,1.0,0.7);
@@ -351,6 +386,7 @@ void drawhuman()
 
 void run() 
 {   
+    wheel = 20*dt;
 
     head = -10*cos(dt);
     top_wrist = 10*cos(dt);
