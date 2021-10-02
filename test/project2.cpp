@@ -5,7 +5,7 @@
 #include <GL/glut.h>
 
 static GLfloat dt(0.1);
-static float cam_r(1);
+static float a(200);
 static float cam_x(0);
 static float cam_y(1);
 static float cam_z(-1);
@@ -350,9 +350,10 @@ void init (void)
 
 void display(void)
 {   
-
-    glClear (GL_COLOR_BUFFER_BIT);
-
+    glClear (GL_COLOR_BUFFER_BIT);      
+    
+    
+    glMatrixMode(GL_MODELVIEW);
     glBegin(GL_QUAD_STRIP);
         glColor3f(0.8235,0.8824,0.9176);
         glVertex3f(-50.0,0.0,50.0);
@@ -388,16 +389,22 @@ void display(void)
 
 void orientMe()
 {   
-    cam_x = cam_r*sin(theta*M_PI/180)*cos(phi*M_PI/180);
-    cam_y = cam_r*sin(phi*M_PI/180);
-    cam_z = cam_r*cos(theta*M_PI/180)*cos(phi*M_PI/180);
+    cam_x = sin(theta*M_PI/180)*cos(phi*M_PI/180);
+    cam_y = sin(phi*M_PI/180);
+    cam_z = cos(theta*M_PI/180)*cos(phi*M_PI/180);
+    glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     gluLookAt(cam_x,cam_y,cam_z, 0.0,0.0,0.0, -cam_x, 1/cam_y - cam_y, -cam_z);
 
 }
 void zoom()
 {
-    return;
+    int w(800);
+    int h(800);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    if (w >= h) glOrtho(-a*w/h,a*w/h,-a,a,-a,a);
+    else glOrtho(-a,a,-a*h/w,a*h/w,-a,a);   
 }
 
 
@@ -406,6 +413,11 @@ void keyboard(unsigned char key, int x, int y)
     float da = 10;
     switch(key)
     {
+        case 'r':
+            dt += 0.1;
+            human1.run(dt,5);
+            wheel2.roll(dt,10);
+            break;
         case 'w':
             phi += da;
             if (phi > 89) phi = 88;
@@ -436,23 +448,23 @@ void keyboard(unsigned char key, int x, int y)
             orientMe();
             break;
 
-        // case 'q':
-        //     cam_r -= da/10;
-        //     //if (a <= 10) a = 10;
-        //     orientMe();
+        case 'q':
+            a -= da;
+            if (a <= 50) a = 50;
+            zoom();
             
-        //     std::cout << cam_r << std::endl;
+            std::cout << a << std::endl;
 
-        //     break;
+            break;
 
-        // case 'e':
-        //     cam_r += da/10;
-        //     //if (a >= 200) a = 200;
-        //     orientMe();
+        case 'e':
+            a += da;
+            if (a >= 1000) a = 1000;
+            zoom();
 
-        //     std::cout << cam_r << std::endl;
+            std::cout << a << std::endl;
 
-        //     break;
+            break;
    
     }
     glutPostRedisplay();
@@ -471,18 +483,15 @@ void timer(int value)
 
 void reshape(int w, int h)
 {
-    float a = 100;
-
     glViewport(0, 0, (GLsizei) w, (GLsizei) h);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     if (w >= h) glOrtho(-a*w/h,a*w/h,-a,a,-a,a);
     else glOrtho(-a,a,-a*h/w,a*h/w,-a,a);
-    //gluPerspective(45,w/h,-50,200.0);
+    
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     gluLookAt(1.0,1.0,1.0, 0.0,0.0,0.0, 0.0, 1.0, 0.0);
-
 
 }
 
