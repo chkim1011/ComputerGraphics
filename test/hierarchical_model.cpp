@@ -16,11 +16,74 @@ static float pole_x, pole_y, pole_z = 0;
 static float fly_x, fly_y, fly_z = 0;
 static bool tf = true;
 
-
 static GLUquadricObj* obj;
 static GLUquadricObj* obj1;
 
-class Human {
+
+
+
+void drawgrid()
+{
+    glBegin(GL_LINES);
+    glColor3f(0.1,0.1,0.1);
+
+
+        glVertex3f(-100.0,0.0,100.0);
+        glVertex3f(100.0,0.0,100.0);
+        glVertex3f(-100.0,0.0,75.0);
+        glVertex3f(100.0,0.0,75.0);
+        glVertex3f(-100.0,0.0,50.0);
+        glVertex3f(100.0,0.0,50.0);
+        glVertex3f(-100.0,0.0,25.0);
+        glVertex3f(100.0,0.0,25.0);
+        glVertex3f(-100.0,0.0,0.0);
+        glVertex3f(100.0,0.0,0.0);
+        glVertex3f(100.0,0.0,-25.0);
+        glVertex3f(-100.0,0.0,-25.0);
+        glVertex3f(100.0,0.0,-50.0);
+        glVertex3f(-100.0,0.0,-50.0);
+        glVertex3f(100.0,0.0,-75.0);
+        glVertex3f(-100.0,0.0,-75.0);
+        glVertex3f(100.0,0.0,-100.0);
+        glVertex3f(-100.0,0.0,-100.0);
+
+        glVertex3f(100.0,0.0,-100.0);
+        glVertex3f(100.0,0.0,100.0);
+        glVertex3f(75.0,0.0,-100.0);
+        glVertex3f(75.0,0.0,100.0);
+        glVertex3f(50.0,0.0,-100.0);
+        glVertex3f(50.0,0.0,100.0);
+        glVertex3f(25.0,0.0,-100.0);
+        glVertex3f(25.0,0.0,100.0);
+        glVertex3f(0.0,0.0,0.-100);
+        glVertex3f(0.0,0.0,100.0);
+        glVertex3f(-25.0,0.0,100.0);
+        glVertex3f(-25.0,0.0,-100.0);
+        glVertex3f(-50.0,0.0,100.0);
+        glVertex3f(-50.0,0.0,-100.0);
+        glVertex3f(-75.0,0.0,100.0);
+        glVertex3f(-75.0,0.0,-100.0);
+        glVertex3f(-100.0,0.0,100.0);
+        glVertex3f(-100.0,0.0,-100.0);
+    glEnd();
+}
+
+void drawwall()
+{
+    glBegin(GL_QUAD_STRIP);
+        glColor3f(0.8235,0.8824,0.9176);
+        glVertex3f(-100.0,0.0,100.0);
+        glVertex3f(-100.0,100.0,100.0);
+        glVertex3f(-100.0,0.0,-100.0);
+        glVertex3f(-100.0,100.0,-100.0);
+        glVertex3f(100.0,0.0,-100.0);
+        glVertex3f(100.0,100.0,-100.0);
+    glEnd();
+}
+
+
+class Human 
+{
 public:
     GLfloat top_wrist[3] , bot_wrist[3], right_shoulder[3], 
             left_shoulder[3], right_arm[3], left_arm[3], 
@@ -224,7 +287,7 @@ public:
     {
        
         if (fly_y >= 100 ) {tf = false;}
-        if (fly_y <= -1 ) {ds = 0; tf =true;}        
+        if (fly_y <= -1 ) {ds = (int)ds % 10; tf =true;}        
 
         if (tf) 
         {
@@ -250,6 +313,7 @@ public:
             right_shoulder[2] = pow(13*sin(3*ds),2) - 169;
             left_shoulder[2] = 169 - pow(13*sin(3*ds),2);
 
+
             right_arm[2] = abs(60*sin(3*ds)) - 60;
             left_arm[2] = 60 - abs(60*sin(3*ds));
 
@@ -258,6 +322,7 @@ public:
 
             right_knee[2] = 100 - abs(100*sin(3*ds));
             left_knee[2] = abs(100*sin(3*ds)) - 100;
+
         }
 
         std::cout << fly_y << std::endl;
@@ -596,68 +661,10 @@ public:
 
 private:
     GLfloat wheel = 0;
-};
-    
-void drawgrid()
-{
-    glBegin(GL_LINES);
-    glColor3f(0.1,0.1,0.1);
+};  
 
-        glVertex3f(-100.0,0.0,-100.0);
-        glVertex3f(-100.0,100.0,-100.0);
-
-        glVertex3f(-100.0,0.0,100.0);
-        glVertex3f(100.0,0.0,100.0);
-        glVertex3f(-100.0,0.0,75.0);
-        glVertex3f(100.0,0.0,75.0);
-        glVertex3f(-100.0,0.0,50.0);
-        glVertex3f(100.0,0.0,50.0);
-        glVertex3f(-100.0,0.0,25.0);
-        glVertex3f(100.0,0.0,25.0);
-        glVertex3f(-100.0,0.0,0.0);
-        glVertex3f(100.0,0.0,0.0);
-        glVertex3f(100.0,0.0,-25.0);
-        glVertex3f(-100.0,0.0,-25.0);
-        glVertex3f(100.0,0.0,-50.0);
-        glVertex3f(-100.0,0.0,-50.0);
-        glVertex3f(100.0,0.0,-75.0);
-        glVertex3f(-100.0,0.0,-75.0);
-        glVertex3f(100.0,0.0,-100.0);
-        glVertex3f(-100.0,0.0,-100.0);
-
-        glVertex3f(100.0,0.0,-100.0);
-        glVertex3f(100.0,0.0,100.0);
-        glVertex3f(75.0,0.0,-100.0);
-        glVertex3f(75.0,0.0,100.0);
-        glVertex3f(50.0,0.0,-100.0);
-        glVertex3f(50.0,0.0,100.0);
-        glVertex3f(25.0,0.0,-100.0);
-        glVertex3f(25.0,0.0,100.0);
-        glVertex3f(0.0,0.0,0.-100);
-        glVertex3f(0.0,0.0,100.0);
-        glVertex3f(-25.0,0.0,100.0);
-        glVertex3f(-25.0,0.0,-100.0);
-        glVertex3f(-50.0,0.0,100.0);
-        glVertex3f(-50.0,0.0,-100.0);
-        glVertex3f(-75.0,0.0,100.0);
-        glVertex3f(-75.0,0.0,-100.0);
-        glVertex3f(-100.0,0.0,100.0);
-        glVertex3f(-100.0,0.0,-100.0);
-    glEnd();
-}
-
-void drawwall()
-{
-    glBegin(GL_QUAD_STRIP);
-        glColor3f(0.8235,0.8824,0.9176);
-        glVertex3f(-100.0,0.0,100.0);
-        glVertex3f(-100.0,100.0,100.0);
-        glVertex3f(-100.0,0.0,-100.0);
-        glVertex3f(-100.0,100.0,-100.0);
-        glVertex3f(100.0,0.0,-100.0);
-        glVertex3f(100.0,100.0,-100.0);
-    glEnd();
-}
+Human human1, human2, human3, human4, human5;
+Wheel wheel1, wheel2;
 
 void init (void)
 {
@@ -672,9 +679,6 @@ void init (void)
 
 }
 
-Human human1, human2, human3, human4;
-Wheel wheel1, wheel2;
-
 
 void display(void)
 {   
@@ -684,32 +688,81 @@ void display(void)
     glMatrixMode(GL_MODELVIEW);
     
     //background
-    drawwall();
-    drawgrid();
-
-    //running human
+    //drawwall();
     glPushMatrix();
-    glTranslatef(-50.0,0.0,30.0);
-    glRotatef(180,0.0,1.0,0.0);
-    human1.top_wrist[0] = 10;
-    human1.bot_wrist[0] = 10;
-    human1.drawhuman();
-    wheel1.drawwheel();
-    glPopMatrix();
+    glTranslatef(0.0,-25.0,0.0);
+    drawgrid();
 
     //walking human    
     glPushMatrix();  
     glTranslatef(-50.0,0.0,-30.0);
+    glScalef(2.5,2.5,2.5);
     glRotatef(0,0.0,1.0,0.0);
     wheel2.drawwheel();
     human2.drawhuman();
     glPopMatrix();
     
     
+    
+    //running human
+    glPushMatrix();
+    glTranslatef(-50.0,125.0,-30.0);
+    glRotatef(180,0.0,1.0,0.0);
+    human1.top_wrist[0] = 10;
+    human1.bot_wrist[0] = 10;
+    human1.drawhuman();
+    wheel1.drawwheel();
+    glPopMatrix();
        
+  
+  
+    //pole human
+    glPushMatrix();
+    glTranslatef(50.0,0.0,-50.0);
+    glScalef(1.5,1.5,1.5);
+
+    glPushMatrix();
+    glTranslatef(pole_x,pole_y,pole_z);
+    human4.drawhuman();
+    glPopMatrix();
+
+    
+    glPushMatrix();
+    glColor3f(0.5,0.5,0.5);
+    glTranslatef(0.0,43.5,0.0);
+    glRotatef(90.0,0.0,1.0,0.0);
+    glTranslatef(0.0,0.0,-20.0);
+    gluCylinder(obj,0.5,0.5,40,20,10);
+    glPopMatrix();
+    
+    
+    glPushMatrix();
+    glColor3f(0.0,0.25,0.25);
+    glRotatef(-90,1.0,0.0,0.0);
+    glTranslatef(20.0,0.0,0.0);
+    gluCylinder(obj, 1.0,1.0,50,20,10);
+    glTranslatef(-40.0,0.0,0.0);
+    gluCylinder(obj, 1.0,1.0,50,20,10);
+    glPopMatrix();
+
+    
+    glPopMatrix();
+
+
+    //fly human
+
+    glPushMatrix();
+    glTranslatef(fly_x,fly_y,fly_z);  
+    glTranslatef(-50.0,0.0,100.0);
+    glRotatef(90,0.0,1.0,0.0);
+    glScalef(2.0,2.0,2.0);
+    human5.drawhuman();
+    glPopMatrix();
+
     //exercise human
     glPushMatrix();
-    glTranslatef(50.0,0.0,25.0);
+    glTranslatef(50.0,0.0,75.0);
+    glScalef(2.0,2.0,2.0);
     
     glPushMatrix();
     glColor3f(0.2,0.2,0.2);
@@ -731,33 +784,6 @@ void display(void)
     glPopMatrix();
     
     glPopMatrix();
-  
-  
-    //pole human
-    glPushMatrix();
-    glTranslatef(0.0,0.0,-50.0);
-
-    glPushMatrix();
-    glColor3f(0.5,0.5,0.5);
-    glTranslatef(0.0,43.5,0.0);
-    glRotatef(90.0,0.0,1.0,0.0);
-    glTranslatef(0.0,0.0,-20.0);
-    gluCylinder(obj,0.5,0.5,40,20,10);
-    glPopMatrix();
-    
-    
-    glPushMatrix();
-    glColor3f(0.0,0.25,0.25);
-    glRotatef(-90,1.0,0.0,0.0);
-    glTranslatef(20.0,0.0,0.0);
-    gluCylinder(obj, 1.0,1.0,50,20,10);
-    glTranslatef(-40.0,0.0,0.0);
-    gluCylinder(obj, 1.0,1.0,50,20,10);
-    glPopMatrix();
-
-    glTranslatef(fly_x,fly_y,fly_z);
-    glTranslatef(pole_x,pole_y,pole_z);
-    human4.drawhuman();
     glPopMatrix();
 
 
@@ -792,15 +818,17 @@ void timer(int value)
 {  
     dt += 0.1;
     
-    //human4.pole(dt,1);
-    human4.fly();
+    
+    human5.fly();
+    
+    human4.pole(dt,1);
 
     human3.exercise(dt,1);
  
 
 
-    wheel2.roll(dt,20);
-    human2.walk(dt,1);
+    wheel2.roll(dt,40);
+    human2.walk(dt,2);
 
     wheel1.roll(dt,100);
     human1.run(dt,5);
