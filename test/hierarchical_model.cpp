@@ -901,10 +901,12 @@ void reshape(int w, int h)
     glLoadIdentity();
     if (w >= h) glOrtho(-a*w/h,a*w/h,-a,a,-a,a);
     else glOrtho(-a,a,-a*h/w,a*h/w,-a,a);
+    gluLookAt(1.0,1.0,1.0, 0.0,0.0,0.0, 0.0, 1.0, 0.0);
     
+
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    gluLookAt(1.0,1.0,1.0, 0.0,0.0,0.0, 0.0, 1.0, 0.0);
+    //gluLookAt(1.0,1.0,1.0, 0.0,0.0,0.0, 0.0, 1.0, 0.0);
 
 }
 
