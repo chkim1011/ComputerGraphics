@@ -1,6 +1,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <string>
 #include <vector>
 #include <cmath>
@@ -27,7 +28,13 @@ static float lastvx =0.0, lastvy = 0.0, lastvz = 0.0;
 static float fov = 45.0, lastfov = 45.0;
 static float cam_dist = 200.0, lastcam_dist = 100.0;
 
-static std::string inputfile = "./trombone.txt";
+//static std::string inputfile = "./trombone_CR.txt";
+//static std::string inputfile = "./trombone_BS.txt";
+static std::string inputfile = "./coke_bottle_CR.txt";
+//static std::string inputfile = "./coke_bottle_BS.txt";
+//static std::string inputfile = "./my_surface.txt";
+
+
 static bool Bspline = false;
 static bool CRspline = false;
 static int section_num;
@@ -227,6 +234,8 @@ static float currpoint[3]={0.0,0.0,0.0};
 static float angle, c_norm;
 static std::vector<std::vector<Point>> cross_sections;
 static std::vector<std::vector<Point>> Vertexes;
+static std::vector<std::vector<Point>> Original;
+static std::vector<std::vector<Point>> Normals;
 static std::vector<float> Scaling_factor;
 static std::vector<Point> Translate_factor;
 static std::vector<Quaternion> Rotate_factor;
@@ -266,12 +275,12 @@ void quat_discretize(const Quaternion q0, const Quaternion q1, const Quaternion 
     for (int i = 0; i < resolution; i++)
     {
         float t = 1.0/(resolution-1) * i;
-        Quaternion q01 = slerp2(q0, q1, t);
-        Quaternion q12 = slerp2(q1, q2, t);
-        Quaternion q23 = slerp2(q2, q3, t);
-        Quaternion q02 = slerp2(q01, q12, t);
-        Quaternion q13 = slerp2(q12, q23, t);
-        Quaternion q03 = slerp2(q02, q13, t);
+        Quaternion q01 = slerp(q0, q1, t);
+        Quaternion q12 = slerp(q1, q2, t);
+        Quaternion q23 = slerp(q2, q3, t);
+        Quaternion q02 = slerp(q01, q12, t);
+        Quaternion q13 = slerp(q12, q23, t);
+        Quaternion q03 = slerp(q02, q13, t);
 
         curve.push_back(q03);
     }
@@ -514,7 +523,7 @@ void Rotatespline(const int section_num, const std::vector<Quaternion> Rotate_fa
 }
 
 
-void vertex_setting(const int section_num, std::vector<std::vector<Point>>& Vertexes, const int resolution)
+void setVertex(const int section_num, std::vector<std::vector<Point>>& Vertexes, const int resolution)
 {
     std::vector<std::vector<Point>> new_sections;
     std::vector<float> scale_spline;
@@ -547,7 +556,6 @@ void vertex_setting(const int section_num, std::vector<std::vector<Point>>& Vert
         Quaternion q = rot_spline[i];
         Point t = trans_spline[i];
 
-        if (cross_sections[0].size() != ctrl_pts_num) {cout << "Size different" << endl; return;}
         for (int j = 0; j < ctrl_pts_num; j++)
         {
             Quaternion scaled{0,{0,0,0}};
@@ -565,7 +573,7 @@ void vertex_setting(const int section_num, std::vector<std::vector<Point>>& Vert
         new_sections.push_back(tempsection);
     }
 
-    if (Bspline)
+    if (Bspline == true)
     {
         for (int i = 0; i < new_sections.size(); i++)
         {
@@ -575,7 +583,7 @@ void vertex_setting(const int section_num, std::vector<std::vector<Point>>& Vert
             Vertexes.push_back(section_verts);
         }
     }
-    else if (CRspline)
+    else if (CRspline == true)
     {
         for (int i = 0; i < new_sections.size(); i++)
         {
@@ -585,23 +593,14 @@ void vertex_setting(const int section_num, std::vector<std::vector<Point>>& Vert
 
             CatmullRom(new_sections[i].size(), new_sections[i], new_ctrlpts,resolution);
             cubicBezier(new_ctrlpts.size(), new_ctrlpts, section_verts, resolution);
+       
+
             Vertexes.push_back(section_verts);
         }
-    }
-        
-        for (int i = 0; i < Vertexes.size(); i++)
-        {
-            for (int j = 0; j < Vertexes[i].size(); i++)
-            {
-                cout << Vertexes[i][j].x << " "  << Vertexes[i][j].y<< " "  <<Vertexes[i][j].z << endl;
-            }
-        }
-        
-
+    }    
 
 }
 
-static std::vector<std::vector<Point>> Original;
 void original_sections(const int section_num, std::vector<std::vector<Point>>& Original, const int resolution)
 {
 
@@ -630,8 +629,93 @@ void original_sections(const int section_num, std::vector<std::vector<Point>>& O
     }
 }
 
+void setNormal(const vector<vector<Point>>& Vertexes, vector<vector<Point>>& Normals)
+{
+    int a = Vertexes.size();
+    int b = Vertexes[0].size();
+
+    for (int i = 0; i < a; i++)
+    {
+        Point temp = {0,0,0};
+        vector<Point> tem;
+        for (int j = 0; j < b; j++)
+        {
+            tem.push_back(temp);
+        }
+        Normals.push_back(tem);
+    }
+
+    vector<vector<Point>> totalsecnorm;
+    for (int i = 0; i < a-1; i++) 
+    {
+        vector<Point> onesecnorm;
+        for (int j = 0; j < b; j++)
+        {
+            float v1[3] = {Vertexes[i+1][j].x-Vertexes[i][j].x,Vertexes[i+1][j].y-Vertexes[i][j].y,Vertexes[i+1][j].z-Vertexes[i][j].z};
+            float v2[3] = {Vertexes[i+1][j].x-Vertexes[i][j+1].x,Vertexes[i+1][j].y-Vertexes[i][j+1].y,Vertexes[i+1][j].z-Vertexes[i][j+1].z};
+            float cross[3];
+            crossproduct(v1, v2, cross);
+            normalize(cross);
+            Point temp{cross[0],cross[1],cross[2]};
+            onesecnorm.push_back(temp);
+        }
+        totalsecnorm.push_back(onesecnorm);
+    }
+    for (int j = 1; j < b; j++)
+    {
+        for (int i = 0; i < a; i++)
+        {
+            if (i == 0)
+            {
+                Normals[i][j].x = (totalsecnorm[i][j-1].x + totalsecnorm[i][j].x)/2;
+                Normals[i][j].y = (totalsecnorm[i][j-1].y + totalsecnorm[i][j].y)/2;
+                Normals[i][j].z = (totalsecnorm[i][j-1].z + totalsecnorm[i][j].z)/2;
+
+            }
+            else if(i == a-1)
+            {
+                Normals[i][j].x = (totalsecnorm[i-1][j-1].x + totalsecnorm[i-1][j].x)/2;
+                Normals[i][j].y = (totalsecnorm[i-1][j-1].y + totalsecnorm[i-1][j].y)/2;
+                Normals[i][j].z = (totalsecnorm[i-1][j-1].z + totalsecnorm[i-1][j].z)/2;           
+            }
+            else
+            {
+                Normals[i][j].x = (totalsecnorm[i][j-1].x + totalsecnorm[i][j].x + totalsecnorm[i-1][j-1].x + totalsecnorm[i-1][j].x )/4;
+                Normals[i][j].y = (totalsecnorm[i][j-1].y + totalsecnorm[i][j].y + totalsecnorm[i-1][j-1].y + totalsecnorm[i-1][j].y )/4;
+                Normals[i][j].z = (totalsecnorm[i][j-1].z + totalsecnorm[i][j].z + totalsecnorm[i-1][j-1].z + totalsecnorm[i-1][j].z )/4;           
+            }
+        }
+    }
+
+    for (int i = 0; i < a; i++)
+    {
+        if (i == 0)
+        {
+            Normals[i][0].x  = (totalsecnorm[i][b-1].x  + totalsecnorm[i][0].x )/2;
+            Normals[i][0].y = (totalsecnorm[i][b-1].y + totalsecnorm[i][0].y)/2;
+            Normals[i][0].z = (totalsecnorm[i][b-1].z + totalsecnorm[i][0].z)/2;
+        }
+        else if (i == a-1)
+        {
+            Normals[i][0].x  = (totalsecnorm[i-1][b-1].x  + totalsecnorm[i-1][0].x )/2;
+            Normals[i][0].y  = (totalsecnorm[i-1][b-1].y  + totalsecnorm[i-1][0].y )/2;
+            Normals[i][0].z = (totalsecnorm[i-1][b-1].z + totalsecnorm[i-1][0].z)/2;
+        }
+        else
+        {
+            Normals[i][0].x  = (totalsecnorm[i][b-1].x  + totalsecnorm[i][0].x  + totalsecnorm[i-1][b-1].x  + totalsecnorm[i-1][0].x  )/4;
+            Normals[i][0].y = (totalsecnorm[i][b-1].y + totalsecnorm[i][0].y + totalsecnorm[i-1][b-1].y + totalsecnorm[i-1][0].y )/4;
+            Normals[i][0].z = (totalsecnorm[i][b-1].z + totalsecnorm[i][0].z + totalsecnorm[i-1][b-1].z + totalsecnorm[i-1][0].z )/4;           
+
+        }
+    }
+
+
+}
+
 void drawSweptSurface()
 {   
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glBegin(GL_LINES);
     glColor3f(1,0,0);
     glVertex3f(-25,0,0);
@@ -659,17 +743,31 @@ void drawSweptSurface()
     
     glPointSize(1.0);
 
-    glBegin(GL_POINTS);
-    glColor3f(1,1,1);
-    for (int i = 0 ; i < Vertexes.size(); i++)
+    glBegin(GL_QUAD_STRIP);
+    glColor3f(0,0,0);
+    for (int i = 0 ; i < Vertexes.size()-1; i++)
     {
         for (int j = 0; j < Vertexes[i].size(); j++)
         {
+            glNormal3f(-Normals[i][j].x,-Normals[i][j].y,-Normals[i][j].z);
             glVertex3f(Vertexes[i][j].x,Vertexes[i][j].y,Vertexes[i][j].z);
+            glNormal3f(-Normals[i+1][j].x,-Normals[i+1][j].y,-Normals[i+1][j].z);
+            glVertex3f(Vertexes[i+1][j].x,Vertexes[i+1][j].y,Vertexes[i+1][j].z);
         }
     }
     glEnd();
     
+}
+void display()
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+
+    glPushMatrix();
+    drawSweptSurface();
+    glPopMatrix();
+    glFlush();
+    glutSwapBuffers();
 }
 
 void reshape(int w, int h)
@@ -698,18 +796,6 @@ void reshape(int w, int h)
 
 }
 
-void display()
-{
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
-
-    glPushMatrix();
-    drawSweptSurface();
-    glPopMatrix();
-    glFlush();
-    glutSwapBuffers();
-}
-
 void keyboardCB(unsigned char keyPressed, int x, int y)
 {
     switch (keyPressed) {
@@ -727,7 +813,7 @@ void keyboardCB(unsigned char keyPressed, int x, int y)
         break;
     case 'r':
 
-        cam_dist = 6;
+        cam_dist = 200;
         cam_x= 0; cam_y = 0; cam_z = 1;
         lookat_x = 0; lookat_y = 0;
         fov = 45;
@@ -735,9 +821,12 @@ void keyboardCB(unsigned char keyPressed, int x, int y)
         reshape(width, height);
         break;
     case 'p':
-        //peak
-        //peaking coordinate -> look at point
+        glEnable(GL_LIGHTING);
+        reshape(width, height);
         break;
+    case 'o':
+        glDisable(GL_LIGHTING);
+        reshape(width, height);
     }
     glutPostRedisplay();
 }
@@ -927,8 +1016,8 @@ void motionCB(int x, int y) {
 
 void readFile()
 {
-    std::string curve;
-    std::vector<Point> single_section;
+    string line, curve;
+    vector<Point> single_section;
     Point temp;
     Quaternion rtemp;
     float value;
@@ -936,40 +1025,71 @@ void readFile()
     std::ifstream file(inputfile);
     if (file.is_open())
     {
-        getline(file, curve);
+        std::getline(file, line);
+        istringstream ss(line);
+        ss >> curve;
+        ss.clear();
+        ss.str("");
+
+        std::cout << curve << endl;
         curve == "BSPLINE"? (Bspline = true) : (CRspline = true);
 
-        file >> section_num;
-        file >> ctrl_pts_num;
-        std::cout << Bspline << " " <<section_num << " " << ctrl_pts_num<< std::endl;
+        std::getline(file, line);
+        ss.str(line);
+        ss >> section_num;
+        ss.clear();
+        ss.str("");
 
-        for (int i = 0; i < section_num; i++)
-        {
-            for (int j = 0; j < ctrl_pts_num; j++)
-            {
-                file >> temp.x;
-                file >> temp.z;
+        std::cout << section_num << endl;
+
+        std::getline(file,line);
+        ss.str(line);
+        ss >> ctrl_pts_num;
+        ss.clear();
+        ss.str("");
+
+        std::cout << ctrl_pts_num << endl;
+        while (getline(file, line))
+        {   
+            if(line[0] == '#' || line.length() <= 1) continue;
+
+            for (int i = 0; i < ctrl_pts_num; i++)
+            {   
+                
+                ss.str(line);
+                ss >> temp.x >> temp.z;
                 temp.y = 0;
                 single_section.push_back(temp);
+
+                ss.clear();
+                ss.str("");
+                getline(file, line);
             }
             cross_sections.push_back(single_section);
 
-            file >> value;
+            ss.str(line);
+            ss >> value;
             Scaling_factor.push_back(value);
-
-            file >> rtemp.w;
-            file >> rtemp.v[0];
-            file >> rtemp.v[1];
-            file >> rtemp.v[2];
-            Rotate_factor.push_back(rtemp);
+            ss.clear();
+            ss.str("");
             
-            file >> temp.x;
-            file >> temp.y;
-            file >> temp.z;
+            getline(file, line);
+            ss.str(line);
+            ss >> rtemp.w >> rtemp.v[0] >> rtemp.v[1] >> rtemp.v[2];
+            Rotate_factor.push_back(rtemp);
+            ss.clear();
+            ss.str("");
+
+            getline(file, line);
+            ss.str(line);
+            ss >> temp.x >> temp.y >> temp.z;
             Translate_factor.push_back(temp);
+            ss.clear();
+            ss.str("");
         }
     }
     file.close();
+
 }
 
 void idle() { glutPostRedisplay(); }
@@ -977,10 +1097,9 @@ void idle() { glutPostRedisplay(); }
 int main(int argc, char** argv) {
 
     readFile();
-    vertex_setting(section_num, Vertexes, 20);
-    original_sections(section_num, Original, 20);
-    cout << "Section num: " << Vertexes.size() << endl;
-    cout << "Section num: " << Original.size() << " ctrl num: " << Original[0].size()<<endl;
+    setVertex(section_num, Vertexes, 20);
+    setNormal(Vertexes, Normals);
+    //original_sections(section_num, Original, 20);
 
 
 
@@ -990,13 +1109,22 @@ int main(int argc, char** argv) {
     glutCreateWindow("3D viewer");
 
     reshape(width, height);
+
+
+    GLfloat light_position[] = { 1.0, 1.0, 1.0, 0.0 };
+    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glShadeModel(GL_SMOOTH);
 
     glClearDepth(1.0f);
     glDepthFunc(GL_LESS);
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_VERTEX_ARRAY);
+    glEnable(GL_POLYGON_SMOOTH);
+
+    
 
     glutIdleFunc(idle);
     glutDisplayFunc(display);
