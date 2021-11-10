@@ -30,9 +30,9 @@ static float cam_dist = 200.0, lastcam_dist = 100.0;
 
 //static std::string inputfile = "./trombone_CR.txt";
 //static std::string inputfile = "./trombone_BS.txt";
-static std::string inputfile = "./coke_bottle_CR.txt";
+//static std::string inputfile = "./coke_bottle_CR.txt";
 //static std::string inputfile = "./coke_bottle_BS.txt";
-//static std::string inputfile = "./my_surface.txt";
+static std::string inputfile = "./my_surface.txt";
 
 
 static bool Bspline = false;
@@ -744,7 +744,7 @@ void drawSweptSurface()
     glPointSize(1.0);
 
     glBegin(GL_QUAD_STRIP);
-    glColor3f(0,0,0);
+    glColor3f(1,1,1);
     for (int i = 0 ; i < Vertexes.size()-1; i++)
     {
         for (int j = 0; j < Vertexes[i].size(); j++)
@@ -1089,6 +1089,9 @@ void readFile()
         }
     }
     file.close();
+    if (section_num != cross_sections.size()) cout<< "size differ" << endl;
+    if (ctrl_pts_num != cross_sections[0].size()) cout<< "size differ" << endl;
+
 
 }
 
