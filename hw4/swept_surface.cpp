@@ -738,9 +738,9 @@ void drawSweptSurface()
     //     glEnd();
     // }
     
-    GLfloat silver_amb[] = { 0.19225, 0.19225, 0.19225, 1.0};
-    GLfloat silver_diff[] = { 0.50754, 0.50754, 0.50754, 1.0};
-    GLfloat silver_spec[] = { 0.508273, 0.508273, 0.508273, 1.0};
+    GLfloat silver_amb[] = { 0.2, 0.2, 0.2, 1.0};
+    GLfloat silver_diff[] = { 0.5, 0.5, 0.5, 1.0};
+    GLfloat silver_spec[] = { 0.5, 0.5, 0.5, 1.0};
 
     glMaterialfv(GL_FRONT, GL_AMBIENT, silver_amb);
     glMaterialfv(GL_FRONT, GL_DIFFUSE, silver_diff);
@@ -781,14 +781,14 @@ void drawrubberball()
 void drawcube1()
 {
     glPushMatrix();
-    GLfloat cube1_amb[] = { 0.0, 0.0, 0.0, 1.0};
-    GLfloat cube1_diff[] = { 0.5, 0.5, 0.0, 1.0};
-    GLfloat cube1_spec[] = { 0.6, 0.6, 0.5, 1.0};
+    GLfloat cube1_amb[] = { 0.1, 0.05, 0.0, 1.0};
+    GLfloat cube1_diff[] = { 0.1, 0.1, 0.05, 1.0};
+    GLfloat cube1_spec[] = { 0.1, 0.1, 0.05, 1.0};
 
     glMaterialfv(GL_FRONT, GL_AMBIENT, cube1_amb);
     glMaterialfv(GL_FRONT, GL_DIFFUSE, cube1_diff);
     glMaterialfv(GL_FRONT, GL_SPECULAR, cube1_spec);
-    glMaterialf(GL_FRONT, GL_SHININESS, 0.25*128.0);
+    glMaterialf(GL_FRONT, GL_SHININESS, 0.1*128.0);
 
     glutSolidCube(10);
     glPopMatrix();
@@ -835,9 +835,9 @@ void drawimpsurf()
 {   
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     
-    GLfloat gold_amb[] = { 0.24725, 0.1995, 0.0745, 1.0};
-    GLfloat gold_diff[] = { 0.75164, 0.60648, 0.22648, 1.0};
-    GLfloat gold_spec[] = { 0.628281, 0.555802, 0.366065, 1.0};
+    GLfloat gold_amb[] = { 0.25, 0.2, 0.1, 1.0};
+    GLfloat gold_diff[] = { 0.7, 0.6, 0.25, 1.0};
+    GLfloat gold_spec[] = { 0.7, 0.6, 0.25, 1.0};
 
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, gold_amb);
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, gold_diff);
@@ -862,14 +862,14 @@ void drawimpsurf()
 }
 void drawobj()
 {
-    GLfloat ruby_amb[] = { 0.1745, 0.01175, 0.01175, 1.0};
-    GLfloat ruby_diff[] = { 0.61424, 0.04136, 0.04136, 1.0};
-    GLfloat ruby_spec[] = { 0.727811, 0.626959, 0.626959, 1.0};
+    GLfloat ruby_amb[] = { 0.15, 0.01, 0.01, 1.0};
+    GLfloat ruby_diff[] = { 0.6, 0.05, 0.05, 1.0};
+    GLfloat ruby_spec[] = { 0.72, 0.6, 0.6, 1.0};
 
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ruby_amb);
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, ruby_diff);
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, ruby_spec);
-    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 0.6*128);
+    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 0.8*128);
 
     glPointSize(5);
     glPolygonMode(GL_FRONT, GL_FILL);
