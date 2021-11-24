@@ -26,7 +26,7 @@ static float cam_x = 0.0,cam_y= 0.0, cam_z = 1.0;
 static float vx = 0.0, vy = 1.0, vz = 0.0;
 static float lastvx =0.0, lastvy = 0.0, lastvz = 0.0;
 static float fov = 45.0, lastfov = 45.0;
-static float cam_dist = 200.0, lastcam_dist = 100.0;
+static float cam_dist = 100.0, lastcam_dist = 100.0;
 
 
 void normalize(float *a)
@@ -709,31 +709,28 @@ void setNormal(const vector<vector<Point>>& Vertexes, vector<vector<Point>>& Nor
 void drawSweptSurface()
 {   
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    glBegin(GL_LINES);
-    glColor3f(1,0,0);
-    glVertex3f(-25,0,0);
-    glVertex3f(25,0,0);
-    glColor3f(0,1,0);
-    glVertex3f(0,-25,0);
-    glVertex3f(0,25,0);
-    glColor3f(0,0,1);
-    glVertex3f(0,0,-25);
-    glVertex3f(0,0,25);
-    glEnd();
-    glPointSize(5.0);
 
-
-    for (int i = 0 ; i < Original.size(); i++)
-    {
-        glBegin(GL_LINE_LOOP);
-        glColor3f(1,0,0);
-        for (int j = 0; j < Original[i].size(); j++)
-        {
-            glVertex3f(Original[i][j].x,Original[i][j].y,Original[i][j].z);
-        }
-        glEnd();
-    }
+    // for (int i = 0 ; i < Original.size(); i++)
+    // {
+    //     glBegin(GL_LINE_LOOP);
+    //     glColor3f(1,0,0);
+    //     for (int j = 0; j < Original[i].size(); j++)
+    //     {
+    //         glVertex3f(Original[i][j].x,Original[i][j].y,Original[i][j].z);
+    //     }
+    //     glEnd();
+    // }
     
+    GLfloat silver_amb[] = { 0.19225, 0.19225, 0.19225, 1.0};
+    GLfloat silver_diff[] = { 0.50754, 0.50754, 0.50754, 1.0};
+    GLfloat silver_spec[] = { 0.508273, 0.508273, 0.508273, 1.0};
+
+    glMaterialfv(GL_FRONT, GL_AMBIENT, silver_amb);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, silver_diff);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, silver_spec);
+    glMaterialf(GL_FRONT, GL_SHININESS, 0.4*128);
+
+
     glPointSize(1.0);
 
     glBegin(GL_QUAD_STRIP);
@@ -751,15 +748,107 @@ void drawSweptSurface()
     glEnd();
     
 }
+
+void drawrubberball()
+{
+    glPushMatrix();
+    GLfloat rubber_amb[] = { 0.0, 0.05, 0.0, 1.0};
+    GLfloat rubber_diff[] = { 0.4, 0.5, 0.4, 1.0};
+    GLfloat rubber_spec[] = { 0.04, 0.7, 0.04, 1.0};
+
+    glMaterialfv(GL_FRONT, GL_AMBIENT, rubber_amb);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, rubber_diff);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, rubber_spec);
+    glMaterialf(GL_FRONT, GL_SHININESS, 0.078125*128);
+
+    glutSolidSphere(10.0,100,100);
+    glPopMatrix();
+    
+}
+
+void drawcube()
+{
+    glPushMatrix();
+    GLfloat cube_amb[] = { 0.1745, 0.01175, 0.01175, 1.0};
+    GLfloat cube_diff[] = { 0.61424, 0.04136, 0.04136, 1.0};
+    GLfloat cube_spec[] = { 0.727811, 0.626959, 0.626959, 1.0};
+
+    glMaterialfv(GL_FRONT, GL_AMBIENT, cube_amb);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, cube_diff);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, cube_spec);
+    glMaterialf(GL_FRONT, GL_SHININESS, 0.6*128.0);
+
+    glutSolidCube(10);
+    glPopMatrix();
+}
+
+static vector<float> points;
+void impsurface()
+{
+    const float PI = 3.1415926;
+
+    for (float y = -3; y < 4.9; y += 0.1)
+    {
+        
+        GLfloat coeff = sqrt(pow(log(y+3.2),2)+0.02);  
+
+        for (float theta = 0; theta < 2*PI; theta += 2*PI/100)
+        {   
+            GLfloat x = coeff*cos(theta);
+            GLfloat z = coeff*sin(theta);
+            
+
+            points.push_back(x);
+            points.push_back(y);
+            points.push_back(z);
+            
+        }
+    }
+    cout << points.size() << endl;
+}
+
+void drawimpsurf()
+{   
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    
+    GLfloat gold_amb[] = { 0.24725, 0.1995, 0.0745, 1.0};
+    GLfloat gold_diff[] = { 0.75164, 0.60648, 0.22648, 1.0};
+    GLfloat gold_spec[] = { 0.628281, 0.555802, 0.366065, 1.0};
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, gold_amb);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, gold_diff);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, gold_spec);
+    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 0.4*128);
+
+    glBegin(GL_QUAD_STRIP);
+    for (int y = 0; y < 79; y++)
+    {
+        for (int i = 0; i < 100; i++)
+        {
+            glVertex3f(points[300*y + 3*i],points[300*y + 3*i+1],points[300*y + 3*i+2]);
+            glVertex3f(points[300*(y+1) + 3*i],points[300*(y+1) + 3*i+1],points[300*(y+1) + 3*i+2]);
+
+        }
+        glVertex3f(points[300*y ],points[300*y + 1],points[300*y + 2]);
+        glVertex3f(points[300*(y+1)],points[300*(y+1) + 1],points[300*(y+1) + 2]);
+
+    }
+
+    glEnd();
+}
+
 void display()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
 
     glPushMatrix();
-    drawSweptSurface();
-    glTranslatef(-20,0,0);
-    glutSolidSphere(10.0,10,10);
+    // drawSweptSurface();
+    // glTranslatef(-30,0,0);
+    // drawemcube();
+    // glTranslatef(0.0,0.0,-30.0);
+    // drawrubberball();
+    drawimpsurf();
     glPopMatrix();
     glFlush();
     glutSwapBuffers();
@@ -768,7 +857,7 @@ void display()
 
 void Lighting()
 {
-    GLfloat light_ambient0[] = { 1.0, 1.0, 1.0, 1.0 };
+    GLfloat light_ambient0[] = { 1.0, 1.0, 1.0, 0.0 };
     GLfloat light_diffuse0[] = { 1.0, 1.0, 1.0, 1.0 };
     GLfloat light_specular0[] = { 1.0, 1.0, 1.0, 1.0 };
     GLfloat light_position0[] = { 20.0, 20.0, 20.0, 0.0 };
@@ -792,11 +881,11 @@ void Lighting()
     glLightfv(GL_LIGHT1, GL_SPECULAR, light_specular1);
     glLightfv(GL_LIGHT1, GL_POSITION, light_position1);
 
-    glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 5.0);
+    glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 45.0);
     glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, spot_direction);
     glLightf(GL_LIGHT1, GL_SPOT_EXPONENT, 2.0);
 
-    glEnable(GL_LIGHT1);
+    //glEnable(GL_LIGHT1);
     
 
     GLfloat light_ambient2[] = { 1.0, 1.0, 1.0, 1.0 };
@@ -809,7 +898,7 @@ void Lighting()
     glLightfv(GL_LIGHT2, GL_SPECULAR, light_specular2);
     glLightfv(GL_LIGHT2, GL_POSITION, light_position2);
 
-    glEnable(GL_LIGHT2);
+    //glEnable(GL_LIGHT2);
 
     GLfloat light_ambient3[] = { 1.0, 1.0, 1.0, 1.0 };
     GLfloat light_diffuse3[] = { 1.0, 1.0, 1.0, 1.0 };
@@ -821,7 +910,7 @@ void Lighting()
     glLightfv(GL_LIGHT3, GL_SPECULAR, light_specular3);
     glLightfv(GL_LIGHT3, GL_POSITION, light_position3);
 
-    glEnable(GL_LIGHT3);
+    //glEnable(GL_LIGHT3);
 
 
     GLfloat light_ambient4[] = { 1.0, 1.0, 1.0, 1.0 };
@@ -834,9 +923,8 @@ void Lighting()
     glLightfv(GL_LIGHT4, GL_SPECULAR, light_specular4);
     glLightfv(GL_LIGHT4, GL_POSITION, light_position4);
 
-    glEnable(GL_LIGHT4);
+    //glEnable(GL_LIGHT4);
 
-    glEnable(GL_LIGHTING);
 
 }
 
@@ -1084,8 +1172,52 @@ void motionCB(int x, int y) {
     glutPostRedisplay();
 }
 
-void loadobj(string filename)
-{
+static vector<GLfloat> obj1_v;
+static vector<GLfloat> obj1_vn;
+static vector<GLfloat> obj1_f;
+
+void loadobj(string filename, vector<GLfloat> obj_v, vector<GLfloat> obj_vn, vector<GLfloat> obj_f)
+{   
+    string line;
+    ifstream file(filename);
+    string str;
+
+    if (!file) return;
+    while (getline(file, line))
+    {   
+        
+        if(line.substr(0,2) == "v ")
+        {
+            
+            float x, y, z;
+            istringstream(str) >> x >> y >> z;
+            obj_v.push_back(x);
+            obj_v.push_back(y);
+            obj_v.push_back(z);
+        }
+        else if (line.substr(0,2) == "vn")
+        {
+            
+            float x, y, z;
+            istringstream(str) >> x >> y >> z;
+            obj_vn.push_back(x);
+            obj_vn.push_back(y);
+            obj_vn.push_back(z);
+
+         }
+        else if (line.substr(0,2) == "f ")
+        {
+            cout<< "hif" << endl;
+            float x, y, z;
+            istringstream(str) >> x >> y >> z;
+            cout << x << y << z<< endl;
+
+         }
+
+
+
+    }
+    
 
 }
 void readFile()
@@ -1163,10 +1295,6 @@ void readFile()
         }
     }
     file.close();
-    if (section_num != cross_sections.size()) cout<< "size differ" << endl;
-    if (ctrl_pts_num != cross_sections[0].size()) cout<< "size differ" << endl;
-
-
 }
 
 void idle() { glutPostRedisplay(); }
@@ -1174,9 +1302,11 @@ void idle() { glutPostRedisplay(); }
 int main(int argc, char** argv) {
 
     readFile();
+    loadobj("./Rose.obj", obj1_v, obj1_vn, obj1_f);
     setVertex(section_num, Vertexes, 20);
     setNormal(Vertexes, Normals);
     //original_sections(section_num, Original, 20);
+    impsurface();
 
 
 
@@ -1194,6 +1324,7 @@ int main(int argc, char** argv) {
     glDepthFunc(GL_LESS);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_POLYGON_SMOOTH);
+    glEnable(GL_LIGHTING);
 
     
 
